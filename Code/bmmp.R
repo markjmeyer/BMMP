@@ -1618,3 +1618,33 @@ coef.bootmmp	<- function(mod){
   
   return(dmpt)
 }
+
+
+#### data ####
+
+soc <- rbind(matrix(rep(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 1), times = 17), nrow = 17, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), times = 16), nrow = 16, byrow = TRUE),
+             matrix(rep(c(0, 1, 0, 0, 0, 0, 1, 0, 0, 0), times = 5), nrow = 5, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 1, 0, 0, 0, 0, 1), times = 5), nrow = 5, byrow = TRUE),
+             matrix(rep(c(0, 1, 0, 0, 0, 0, 1, 0, 0, 1), times = 3), nrow = 3, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 0, 0, 1, 0, 0, 0), times = 3), nrow = 3, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 0, 0, 1, 0, 0, 1), times = 3), nrow = 3, byrow = TRUE),
+             matrix(rep(c(0, 1, 0, 1, 0, 0, 0, 0, 0, 0), times = 2), nrow = 2, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 1, 0, 0, 0, 0, 0), times = 2), nrow = 2, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 0, 0, 0, 0, 1, 1), times = 2), nrow = 2, byrow = TRUE),
+             matrix(rep(c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 1, 0, 0, 0, 0, 0, 0, 0, 0), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 1, 1, 0, 0, 0, 1, 1, 1, 0), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 1, 0, 0, 1, 0, 1, 0, 1, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 1, 0, 1, 0, 0, 1, 0, 1, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 1, 0, 1, 0, 0, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 1, 0, 0, 0, 0, 0, 0, 0, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 1, 0, 1, 0, 1, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 1, 0, 0, 1, 1, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(1, 0, 0, 0, 1, 0, 0, 0, 0, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 1, 1, 0, 1, 0, 0, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 0, 0, 0, 0, 0, 1, 0), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(1, 0, 0, 0, 0, 0, 1, 0, 0, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 1, 0, 0, 1, 0, 0, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 0, 0, 1, 0, 0, 1, 0, 1, 1), times = 1), nrow = 1, byrow = TRUE),
+             matrix(rep(c(0, 1, 0, 1, 0, 0, 1, 1, 1, 1), times = 1), nrow = 1, byrow = TRUE))
