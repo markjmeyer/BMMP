@@ -16,11 +16,17 @@ All functions two matrices, X1 and X2, as arguments. X1 is an n x K matrix of th
 >     verbose = TRUE, up = 2000, dots = 200)
 
 Arguments:
+
 X1, X2    n x K data matrices split by type
+
 B         total number of retained posterior samples
+
 burnin    the burnin or warmup
+
 verbose   if TRUE, keeps track of how many samples have been taken
+
 up        if verbose = TRUE, prints updates ever up samples
+
 dots      if verbose = TRUE, prints a dot every dots samples
 
 ### pbpm: Penalized Bayesian Probit Model
