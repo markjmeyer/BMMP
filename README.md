@@ -22,3 +22,13 @@ All functions two matrices, X1 and X2, as arguments. X1 is an n x K matrix of th
 > head(soc)
 
 Additional functions include those to implement the Bootstrap- and GEE-based methods from the exisiting literature.
+
+### geemmp: GEE-based method, Klingenberg and Agresti (2006)
+
+> geemmp(X1, X2, family = gaussian(link = 'identity'), corstr = 'independence')
+
+### bootmmp: Bootstrap-based method, Westfall, Troendle, and Pennello (2010)
+
+> bootmmp(X1, X2, B, int.hyp = FALSE)
+
+All methods are classed with corresponding print(), summary(), and coef() functions to print out estimated differences in marginal probabilities for each set of matched proportions. summary() further provides interval estimates, hypothesis testing features, and model fit criteria.
