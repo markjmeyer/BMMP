@@ -4,7 +4,7 @@ Code for estimating Bayesian methods for multivariate matched proportions (MMP) 
 
 ## Folder Details
 
-The folder titled Code contains the file bmmp.R which has all of the relevant functions to estimate our multivariate probit-based approach for Bayesian MMPs as well as non-Bayesian methods from the existing literature. This file also contains the data used in the reanalysis described in Meyer, Cheng, and Knutson (2023). The folder titled Application contains the file soc_reanalysis.R which can be used to replicate the reanalysis. The files in the folder Simulation were used to for the Simulation Study. Files ending in _mvp and _mvp_bc can take several days to run.
+The folder titled Code contains the file bmmp.R which has all of the relevant functions to estimate our multivariate probit-based approach for Bayesian MMPs as well as non-Bayesian methods from the existing literature. This file also contains the data used in the reanalysis described in Meyer, Cheng, and Knutson (2023). The folder titled Application contains the file soc_reanalysis.R which can be used to replicate the reanalysis. The files in the folder Simulation were used to for the Simulation Study. These files can take several days to run.
 
 ## Brief Function and Object Description
 
