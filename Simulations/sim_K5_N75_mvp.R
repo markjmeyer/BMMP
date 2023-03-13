@@ -6,15 +6,10 @@ source('bmmp.R')
 ##### Settings #####
 n       <- 75
 K       <- 5
-sparse  <- TRUE # FALSE for non-sparse assessment
 M       <- 500 # 500
 mu      <- 0.5
 sCov    <- (0.01^2)*diag(2*K)
-if(sparse){
-  theta12   <- seq(0.05, 0.2, by = 0.01)
-} else{
-  theta21   <- length(seq(0.05, 0.20, by = 0.01)) # length(seq(0.21, 0.35, by = 0.01)) # run in stages, n = 75
-}
+theta12   <- seq(0.05, 0.2, by = 0.01)
 
 ##### BSpAM specs #####
 prt    <- list(at = 1, bt = 1, A = 5, ae = 0.001, be = 0.001)
@@ -54,13 +49,8 @@ spci75s  <- array(0, dim = c(M, 2, ifelse(sparse, length(theta12), length(theta2
 iter <- 0
 
 for(d in 1:ifelse(sparse, length(theta12), length(theta21))){
-  if(sparse){
-    tb    <- c(0.05, theta12[d], 0.005, 0.1, 0.25,
-               0.25, 0.005, 0.05, 0.15, 0.35)
-  } else {
-    tb      <- c(0.05, 0.05, 0.005, 0.1, 0.25,
-                 theta21[d], 0.005, 0.05, 0.15, 0.35)
-  }
+  tb    <- c(0.05, theta12[d], 0.005, 0.1, 0.25,
+             0.25, 0.005, 0.05, 0.15, 0.35)
   for(m in 1:M){
     set.seed(m)
     Ymc   <- rmvnorm(n, mean = tb, sigma = sCov)
@@ -241,7 +231,7 @@ cover5  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(the
 
 apply(spci75s[,2,], 2, sum) # make sure these are more than value in line 209
 
-for(i in 1:ifelse(sparse, length(theta12), length(theta21))){
+for(i in 1:length(theta12)){
   set.seed(2022)
   sids      <- which(spci75s[,2,i] == 1)
   ids       <- sample(sids, size = 200) # make sure '200' is smaller than min of line 204
@@ -308,7 +298,7 @@ for(i in 1:ifelse(sparse, length(theta12), length(theta21))){
 }
 
 #### save output ####
-# save.image(file = 'sim_K5_N75_mvp.RData')
+save.image(file = 'sim_K5_N75_mvp.RData')
 
 
 

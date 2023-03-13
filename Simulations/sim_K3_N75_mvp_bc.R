@@ -6,9 +6,15 @@ source('bmmp.R')
 ##### Settings #####
 n       <- 75
 K       <- 3
+sparse  <- TRUE # FALSE for non-sparse assessment
 M       <- 500 # 500
 mu      <- 0.5
-sCov    <- (0.01^2)*diag(2*K)
+sCov    <- (0.01^2)*matrix(c(1, 0.5, 0.5, 0, 0, 0,
+                             0.5, 1, 0.5, 0, 0, 0,
+                             0.5, 0.5, 1, 0, 0, 0,
+                             0, 0, 0, 1, 0.5, 0.5,
+                             0, 0, 0, 0.5, 1, 0.5,
+                             0, 0, 0, 0.5, 0.5, 1), nrow = 2*K, byrow = TRUE)
 theta12   <- seq(0.05, 0.2, by = 0.01)
 
 ##### BSpAM specs #####
@@ -175,12 +181,12 @@ cover1  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(the
 cover2  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
 cover3  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-apply(spci75s[,2,], 2, sum) # make sure these are more than value in line 183
+apply(spci75s[,2,], 2, sum) # make sure these are more than value in line 189
 
 for(i in 1:length(theta12)){
   set.seed(2022)
   sids      <- which(spci75s[,2,i] == 1)
-  ids       <- sample(sids, size = 200) # make sure '200' is smaller than min of line 178
+  ids       <- sample(sids, size = 200) # make sure '200' is smaller than min of line 184
   
   b1i75s   <- apply(abs(br1i75s[ids,,i]), 2, mean)
   b2i75s   <- apply(abs(br2i75s[ids,,i]), 2, mean)
@@ -224,7 +230,7 @@ for(i in 1:length(theta12)){
 }
 
 #### save output ####
-# save.image(file = 'sim_K3_N75_mvp.RData')
+# save.image(file = 'sim_K3_N75_mvp_bc.RData')
 
 
 

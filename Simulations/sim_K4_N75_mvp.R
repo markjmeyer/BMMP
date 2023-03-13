@@ -6,15 +6,10 @@ source('bmmp.R')
 ##### Settings #####
 n       <- 75
 K       <- 4
-sparse  <- TRUE # FALSE for non-sparse assessment
 M       <- 500 # 500
 mu      <- 0.5
 sCov    <- (0.01^2)*diag(2*K)
-if(sparse){
-  theta12   <- seq(0.05, 0.2, by = 0.01)
-} else{
-  theta21   <- length(seq(0.05, 0.20, by = 0.01)) # length(seq(0.21, 0.35, by = 0.01)) # run in stages, n = 75
-}
+theta12   <- seq(0.05, 0.2, by = 0.01)
 
 ##### BSpAM specs #####
 prt    <- list(at = 1, bt = 1, A = 5, ae = 0.001, be = 0.001)
@@ -24,39 +19,34 @@ dots      <- 50
 up        <- 1000
 
 ##### storage #####
-br1i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-br2i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-br3i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-br4i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
+br1i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+br2i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+br3i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+br4i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
 
-pw1i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-pw2i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-pw3i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-pw4i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
+pw1i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+pw2i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+pw3i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+pw4i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
 
-wd1i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-wd2i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-wd3i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-wd4i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
+wd1i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+wd2i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+wd3i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+wd4i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
 
-cr1i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-cr2i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-cr3i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
-cr4i75s  <- array(0, dim = c(M, 4, ifelse(sparse, length(theta12), length(theta21))))
+cr1i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+cr2i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+cr3i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
+cr4i75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
 
-spci75s  <- array(0, dim = c(M, 2, ifelse(sparse, length(theta12), length(theta21))))
+spci75s  <- array(0, dim = c(M, 5, ifelse(sparse, length(theta12), length(theta21))))
 
 ##### simulation run #####
 iter <- 0
 
 for(d in 1:ifelse(sparse, length(theta12), length(theta21))){
-  if(sparse){
-    tb    <- c(0.05, theta12[d], 0.005, 0.1,
-               0.25, 0.005, 0.05, 0.15)
-  } else {
-    tb      <- c(0.05, 0.05, 0.005, 0.1,
-                 theta21[d], 0.005, 0.05, 0.15)
-  }
+  tb    <- c(0.05, theta12[d], 0.005, 0.1,
+             0.25, 0.005, 0.05, 0.15)
   for(m in 1:M){
     set.seed(m)
     Ymc   <- rmvnorm(n, mean = tb, sigma = sCov)
@@ -75,15 +65,12 @@ for(d in 1:ifelse(sparse, length(theta12), length(theta21))){
     Xs2Cols   <- which(apply(matrix(unlist(lapply(getCounts(X1s, X2s, K), function(x) x == 0)), 
                                     nrow = 4, byrow = TRUE), 2, sum) > 0) + K
     XsCols	<- c(Xs1Cols, Xs2Cols)
-
-    ## sparsity checks ##
-    spci75s[m,1,d]  <- length(XsCols) > 0
-    spci75s[m,2,d]  <- sum(apply(Ys, 2, sum) == 0) > 0
-    if(sum(apply(Ys, 2, sum) == 0) == 0){
-      next
-    }
     
     ## run models ##
+    bmvpn   <- bmvp(X1s, X2s, B = B, burnin = burnin, pen = TRUE, cholesky = FALSE,
+                    Al = 1, Ae = 1, hc = FALSE, al = 0.01, bl = 0.01,
+                    Kp = 2, alpha = 0.001, As = 1, Bs = 1,
+                    verbose = FALSE)
     bmvpp   <- bmvp(X1s, X2s, B = B, burnin = burnin, pen = TRUE, cholesky = FALSE,
                     Al = 1, Ae = 1, hc = TRUE, al = 0.01, bl = 0.01, 
                     Kp = 2, alpha = 0.001, As = 1, Bs = 1,
@@ -107,25 +94,29 @@ for(d in 1:ifelse(sparse, length(theta12), length(theta21))){
     ## extract results ###
     ## bias ##
     # rho #
-    br1i75s[m,,d]   <- (tb[1] - tb[1 + K]) - c(median(bmvpp$rho[,1]), lcRho1, geek$rho[1], boot$resMat[1,1])
-    br2i75s[m,,d]   <- (tb[2] - tb[2 + K]) - c(median(bmvpp$rho[,2]), lcRho2, geek$rho[2], boot$resMat[2,1])
-    br3i75s[m,,d]   <- (tb[3] - tb[3 + K]) - c(median(bmvpp$rho[,3]), lcRho3, geek$rho[3], boot$resMat[3,1])
-    br4i75s[m,,d]   <- (tb[4] - tb[4 + K]) - c(median(bmvpp$rho[,4]), lcRho4, geek$rho[4], boot$resMat[4,1])
+    br1i75s[m,,d]   <- (tb[1] - tb[1 + K]) - c(median(bmvpn$rho[,1]), median(bmvpp$rho[,1]), lcRho1, geek$rho[1], boot$resMat[1,1])
+    br2i75s[m,,d]   <- (tb[2] - tb[2 + K]) - c(median(bmvpn$rho[,2]), median(bmvpp$rho[,2]), lcRho2, geek$rho[2], boot$resMat[2,1])
+    br3i75s[m,,d]   <- (tb[3] - tb[3 + K]) - c(median(bmvpn$rho[,3]), median(bmvpp$rho[,3]), lcRho3, geek$rho[3], boot$resMat[3,1])
+    br4i75s[m,,d]   <- (tb[4] - tb[4 + K]) - c(median(bmvpn$rho[,4]), median(bmvpp$rho[,4]), lcRho4, geek$rho[4], boot$resMat[4,1])
     
     ## intervals ##
     # estimates #
+    bmvpni1    <- quantile(bmvpn$rho[,1], probs = c(0.025, 0.975))
     bmvppi1     <- quantile(bmvpp$rho[,1], probs = c(0.025, 0.975))
     geeki1      <- c(geek$lower[1], geek$upper[1])
     booti1      <- boot$resMat[1,2:3]
     
+    bmvpni2    <- quantile(bmvpn$rho[,2], probs = c(0.025, 0.975))
     bmvppi2     <- quantile(bmvpp$rho[,2], probs = c(0.025, 0.975))
     geeki2      <- c(geek$lower[2], geek$upper[2])
     booti2      <- boot$resMat[2,2:3]
     
+    bmvpni3    <- quantile(bmvpn$rho[,3], probs = c(0.025, 0.975))
     bmvppi3     <- quantile(bmvpp$rho[,3], probs = c(0.025, 0.975))
     geeki3      <- c(geek$lower[3], geek$upper[3])
     booti3      <- boot$resMat[3,2:3]
     
+    bmvpni4    <- quantile(bmvpn$rho[,4], probs = c(0.025, 0.975))
     bmvppi4     <- quantile(bmvpp$rho[,4], probs = c(0.025, 0.975))
     geeki4      <- c(geek$lower[4], geek$upper[4])
     booti4      <- boot$resMat[4,2:3]
@@ -142,37 +133,45 @@ for(d in 1:ifelse(sparse, length(theta12), length(theta21))){
     options(warn = oldw)
     
     # power #
-    pw1i75s[m,,d]   <- 1*c((prod(bmvppi1) > 0), (lcri1$p.val < 0.05), (geek$pval[1] < 0.05), (prod(booti1) > 0))
-    pw2i75s[m,,d]   <- 1*c((prod(bmvppi2) > 0), (lcri2$p.val < 0.05), (geek$pval[2] < 0.05), (prod(booti2) > 0))
-    pw3i75s[m,,d]   <- 1*c((prod(bmvppi3) > 0), (lcri3$p.val < 0.05), (geek$pval[3] < 0.05), (prod(booti3) > 0))
-    pw4i75s[m,,d]   <- 1*c((prod(bmvppi4) > 0), (lcri4$p.val < 0.05), (geek$pval[4] < 0.05), (prod(booti4) > 0))
+    pw1i75s[m,,d]   <- 1*c((prod(bmvpni1) > 0), (prod(bmvppi1) > 0), (lcri1$p.val < 0.05), (geek$pval[1] < 0.05), (prod(booti1) > 0))
+    pw2i75s[m,,d]   <- 1*c((prod(bmvpni2) > 0), (prod(bmvppi2) > 0), (lcri2$p.val < 0.05), (geek$pval[2] < 0.05), (prod(booti2) > 0))
+    pw3i75s[m,,d]   <- 1*c((prod(bmvpni3) > 0), (prod(bmvppi3) > 0), (lcri3$p.val < 0.05), (geek$pval[3] < 0.05), (prod(booti3) > 0))
+    pw4i75s[m,,d]   <- 1*c((prod(bmvpni4) > 0), (prod(bmvppi4) > 0), (lcri4$p.val < 0.05), (geek$pval[4] < 0.05), (prod(booti4) > 0))
     
     # width #
-    wd1i75s[m,,d]   <- c(diff(bmvppi1), diff(lcri1$conf), diff(geeki1), diff(booti1))
-    wd2i75s[m,,d]   <- c(diff(bmvppi2), diff(lcri2$conf), diff(geeki2), diff(booti2))
-    wd3i75s[m,,d]   <- c(diff(bmvppi3), diff(lcri3$conf), diff(geeki3), diff(booti3))
-    wd4i75s[m,,d]   <- c(diff(bmvppi4), diff(lcri4$conf), diff(geeki4), diff(booti4))
+    wd1i75s[m,,d]   <- c(diff(bmvpni1), diff(bmvppi1), diff(lcri1$conf), diff(geeki1), diff(booti1))
+    wd2i75s[m,,d]   <- c(diff(bmvpni2), diff(bmvppi2), diff(lcri2$conf), diff(geeki2), diff(booti2))
+    wd3i75s[m,,d]   <- c(diff(bmvpni3), diff(bmvppi3), diff(lcri3$conf), diff(geeki3), diff(booti3))
+    wd4i75s[m,,d]   <- c(diff(bmvpni4), diff(bmvppi4), diff(lcri4$conf), diff(geeki4), diff(booti4))
     
     # coverage #
-    cr1i75s[m,,d]   <- 1*c((bmvppi1[1] < tb[1] - tb[1 + K] & bmvppi1[2] > tb[1] - tb[1 + K]),
+    cr1i75s[m,,d]   <- 1*c((bmvpni1[1] < tb[1] - tb[1 + K] & bmvpni1[2] > tb[1] - tb[1 + K]),
+                           (bmvppi1[1] < tb[1] - tb[1 + K] & bmvppi1[2] > tb[1] - tb[1 + K]),
                            ((lcri1$conf[1] < (tb[1] - tb[1 + K])) & (lcri1$conf[2] > (tb[1] - tb[1 + K]))),
                            (geeki1[1] < tb[1] - tb[1 + K] & geeki1[2] > tb[1] - tb[1 + K]),
                            (booti1[1] < tb[1] - tb[1 + K] & booti1[2] > tb[1] - tb[1 + K]))
     
-    cr2i75s[m,,d]   <- 1*c((bmvppi2[1] < tb[2] - tb[2 + K] & bmvppi2[2] > tb[2] - tb[2 + K]),
+    cr2i75s[m,,d]   <- 1*c((bmvpni2[1] < tb[2] - tb[2 + K] & bmvpni2[2] > tb[2] - tb[2 + K]),
+                           (bmvppi2[1] < tb[2] - tb[2 + K] & bmvppi2[2] > tb[2] - tb[2 + K]),
                            ((lcri2$conf[1] < (tb[2] - tb[2 + K])) & (lcri2$conf[2] > (tb[2] - tb[2 + K]))),
                            (geeki2[1] < tb[2] - tb[2 + K] & geeki2[2] > tb[2] - tb[2 + K]),
                            (booti2[1] < tb[2] - tb[2 + K] & booti2[2] > tb[2] - tb[2 + K]))
     
-    cr3i75s[m,,d]   <- 1*c((bmvppi3[1] < tb[3] - tb[3 + K] & bmvppi3[2] > tb[3] - tb[3 + K]),
+    cr3i75s[m,,d]   <- 1*c((bmvpni3[1] < tb[3] - tb[3 + K] & bmvpni3[2] > tb[3] - tb[3 + K]),
+                           (bmvppi3[1] < tb[3] - tb[3 + K] & bmvppi3[2] > tb[3] - tb[3 + K]),
                            ((lcri3$conf[1] < (tb[3] - tb[3 + K])) & (lcri3$conf[2] > (tb[3] - tb[3 + K]))),
                            (geeki3[1] < tb[3] - tb[3 + K] & geeki3[2] > tb[3] - tb[3 + K]),
                            (booti3[1] < tb[3] - tb[3 + K] & booti3[2] > tb[3] - tb[3 + K]))
     
-    cr4i75s[m,,d]   <- 1*c((bmvppi4[1] < tb[4] - tb[4 + K] & bmvppi4[2] > tb[4] - tb[4 + K]),
+    cr4i75s[m,,d]   <- 1*c((bmvpni4[1] < tb[4] - tb[4 + K] & bmvpni4[2] > tb[4] - tb[4 + K]),
+                           (bmvppi4[1] < tb[4] - tb[4 + K] & bmvppi4[2] > tb[4] - tb[4 + K]),
                            ((lcri4$conf[1] < (tb[4] - tb[4 + K])) & (lcri4$conf[2] > (tb[4] - tb[4 + K]))),
                            (geeki4[1] < tb[4] - tb[4 + K] & geeki4[2] > tb[4] - tb[4 + K]),
                            (booti4[1] < tb[4] - tb[4 + K] & booti4[2] > tb[4] - tb[4 + K]))
+    
+    ## sparsity checks ##
+    spci75s[m,1,d]  <- length(XsCols) > 0
+    spci75s[m,2,d]  <- sum(apply(Ys, 2, sum) == 0) > 0
     
     ## simulation controls ##
     iter <- iter + 1
@@ -188,37 +187,37 @@ for(d in 1:ifelse(sparse, length(theta12), length(theta21))){
 }
 
 ##### post-process #####
-bias1   <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-bias2   <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-bias3   <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-bias4   <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+bias1   <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+bias2   <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+bias3   <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+bias4   <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-mse1    <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-mse2    <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-mse3    <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-mse4    <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+mse1    <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+mse2    <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+mse3    <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+mse4    <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-power1  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-power2  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-power3  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-power4  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+power1  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+power2  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+power3  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+power4  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-width1  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-width2  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-width3  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-width4  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+width1  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+width2  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+width3  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+width4  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-cover1  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-cover2  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-cover3  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
-cover4  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+cover1  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+cover2  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+cover3  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+cover4  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-apply(spci75s[,2,], 2, sum) # make sure these are more than value in line 209
+apply(spci75s[,2,], 2, sum) # make sure these are more than value in line 220
 
-for(i in 1:ifelse(sparse, length(theta12), length(theta21))){
+for(i in 1:length(theta12)){
   set.seed(2022)
   sids      <- which(spci75s[,2,i] == 1)
-  ids       <- sample(sids, size = 200) # make sure '200' is smaller than min of line 204
+  ids       <- sample(sids, size = 200) # make sure '200' is smaller than min of line 215
   
   b1i75s   <- apply(abs(br1i75s[ids,,i]), 2, mean)
   b2i75s   <- apply(abs(br2i75s[ids,,i]), 2, mean)

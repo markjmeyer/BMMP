@@ -6,15 +6,9 @@ source('bmmp.R')
 ##### Settings #####
 n       <- 75 # 150
 K       <- 2
-sparse  <- TRUE # FALSE for non-sparse assessment
 M       <- 500
 sCov    <- (0.01^2)*diag(2*K)
-if(sparse){
-  theta12   <- seq(0.05, 0.2, by = 0.01)
-  # theta12   <- 0.05
-} else{
-  theta21   <- length(seq(0.05, 0.20, by = 0.01)) # length(seq(0.21, 0.35, by = 0.01)) # run in stages, n = 75
-}
+theta12   <- seq(0.05, 0.2, by = 0.01)
 
 ##### BSpAM specs #####
 B         <- 10000
@@ -41,13 +35,8 @@ spci75s  <- array(0, dim = c(M, 2, ifelse(sparse, length(theta12), length(theta2
 iter <- 0
 
 for(d in 1:ifelse(sparse, length(theta12), length(theta21))){
-  if(sparse){
-    tb    <- c(0.05, theta12[d],
-               0.25, 0.005)
-  } else {
-    tb      <- c(0.05, 0.05,
-                 theta21[d], 0.005)
-  }
+  tb    <- c(0.05, theta12[d],
+             0.25, 0.005)
   for(m in 1:M){
     set.seed(m)
     Ymc   <- rmvnorm(n, mean = tb, sigma = sCov)
@@ -144,27 +133,27 @@ for(d in 1:ifelse(sparse, length(theta12), length(theta21))){
 }
 
 ##### post-process #####
-bias1   <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
-bias2   <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+bias1   <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+bias2   <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-mse1    <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
-mse2    <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+mse1    <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+mse2    <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-power1  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
-power2  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+power1  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+power2  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-width1  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
-width2  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+width1  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+width2  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-cover1  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
-cover2  <- matrix(0, nrow = 5, ncol = ifelse(sparse, length(theta12), length(theta21)))
+cover1  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
+cover2  <- matrix(0, nrow = 4, ncol = ifelse(sparse, length(theta12), length(theta21)))
 
-apply(spci75s[,2,], 2, sum) # make sure these are larger than value in line 162
+apply(spci75s[,2,], 2, sum) # make sure these are larger than value in line 156
 
-for(i in 1:ifelse(sparse, length(theta12), length(theta21))){
+for(i in 1:length(theta12)){
   set.seed(2022)
-  sids      <- which(spci75s[,1,i] == 1)
-  ids       <- sample(sids, size = 200) # make sure '200' is smaller than min of line 157
+  sids      <- which(spci75s[,2,i] == 1)
+  ids       <- sample(sids, size = 200) # make sure '200' is smaller than min of line 151
   
   b1i75s   <- apply(abs(br1i75s[ids,,i]), 2, mean)
   b2i75s   <- apply(abs(br2i75s[ids,,i]), 2, mean)
@@ -198,5 +187,5 @@ for(i in 1:ifelse(sparse, length(theta12), length(theta21))){
 }
 
 #### save output ####
-# save.image(file = 'sim_K2_N75_mvp.RData')
+save.image(file = 'sim_K2_N75_mvp.RData')
 
