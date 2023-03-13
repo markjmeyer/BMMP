@@ -801,7 +801,7 @@ coef.erm		<- function(mod){
 
 
 #### GEE, Klingenberg and Agresti (2006) ####
-geemmp	<- function(X1, X2, family = gaussian(link = 'identity'), corstr = 'independence'){
+geemmp	<- function(X1, X2, family = gaussian(link = 'identity'), corstr = 'independence', alpha = 0.05){
   n		<- nrow(X1)
   K		<- ncol(X1)
   Y		<- as.matrix(cbind(X1, X2))
@@ -818,8 +818,8 @@ geemmp	<- function(X1, X2, family = gaussian(link = 'identity'), corstr = 'indep
   L	      <- cbind(diag(K), -diag(K))
   rho		  <- L%*%beta
   seRho   <- sqrt(diag(L%*%covb%*%t(L)))
-  lower	  <- rho - qnorm(0.975)*seRho
-  upper	  <- rho + qnorm(0.975)*seRho
+  lower	  <- rho - qnorm(1-alpha/2)*seRho
+  upper	  <- rho + qnorm(1-alpha/2)*seRho
   wald	  <- (rho/seRho)^2
   pval	  <- 1 - pchisq(wald, 1)
   
