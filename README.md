@@ -1,6 +1,6 @@
 # BMMP
 
-Code for estimating Bayesian methods for multivariate matched proportions (MMP) as described by Meyer, Cheng, and Knutson (2023), recently accepted for publication in Statistics in Biosciences. A link to the pre-print is forth-coming.
+Code for estimating Bayesian methods for multivariate matched proportions (MMP) as described by Meyer, Cheng, and Knutson (2023), recently accepted for publication in Statistics in Biosciences, available at https://link.springer.com/article/10.1007/s12561-023-09368-8.
 
 ## Folder Details
 
